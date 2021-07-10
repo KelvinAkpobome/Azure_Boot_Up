@@ -1,0 +1,22 @@
+##############
+# vault      #
+##############
+ansible/group_vars/all/vault.yml
+/pass
+
+##############
+# inventory  #
+##############
+ansible/group_vars/dynamic_db.yml
+ansible/group_vars/dynamic_web.yml
+ansible/inventory/hosts
+
+##############
+# terraform  #
+##############
+/terraform/.terraform
+/terraform/terraform.tfvars
+/terraform/terraform.tfstate
+/terraform/terraform.tfstate.backup
+
+

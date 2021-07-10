@@ -1,0 +1,26 @@
+---
+
+handlers:
+  - name: create terraform.tfvars
+    template:
+      src: terraform.tfvars.j2
+      dest: "{{ playbook_dir }}/terraform/terraform.tfvars"
+
+
+task:
+  - name: Apt install packages
+    apt:
+      name: wget
+      state: latest
+
+  - name: terraform install
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/0.9.1/terraform_0.9.1_linux_amd64.zip
+      dest: /usr/bin
+      remote_src: yes
+      notify: create terraform.tfvars
+
+
+  
+
+...

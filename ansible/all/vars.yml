@@ -1,0 +1,16 @@
+---
+
+az_instance_state: absent # present / absent
+playbook_dir: ./ #check
+location: "eastus" #check
+resource_group: "new_ResourceGP" #check
+network_security_group: "new_ResourceGP" #check
+virtual_network: "new_ResourceGP" #check
+subnet: "new_ResourceGP" #check
+VM_number: 2
+hypervisor: az 
+remote_user:
+  az: azureuser 
+
+
+...

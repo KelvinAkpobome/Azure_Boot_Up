@@ -1,0 +1,31 @@
+variable "aws_region" {
+    type = String
+}
+
+variable "profile" {}
+variable "server_port" {}
+
+variable "key_name" {}
+variable "public_key" {}
+variable "private_key" {}
+variable "aws_access_key_id" {}
+variable "aws_secret_access_key" {} 
+variable "aws_availability_zone" {}
+
+
+# the location of the private key for connection to the servers
+private_key ="~/ansible-terraform-keys/id_rsa"
+server_port = "{{ aws_webserver_port }}"
+key_name = "aws_deployer"
+
+# public key, aws_access_key_id, aws_secret_access_key will be overwritten from ansible vault var
+public_key = "{{ public_key }}"
+aws_access_key_id = "{{ aws_access_key_id }}"
+aws_secret_access_key = "{{ aws_secret_access_key }}"
+
+profile = "{{ aws_profile }}"
+
+# aws_ami_id, aws_region will be overwritten from ansible var
+aws_ami_id = "{{ aws_ami_id }}"
+aws_region = "{{ aws_region }}"
+aws_availability_zone = "eu-west-1a"
