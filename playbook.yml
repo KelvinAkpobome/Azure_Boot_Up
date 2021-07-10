@@ -35,7 +35,6 @@
           resource_group: "{{ resource_group }}"
           network_security_group: "{{ network_security_group }}"
           virtual_network: "{{ virtual_network }}"
-          subnet: "{{ subnet }}"
           VM_number: "{{ VM_number }}"
       register: terra_result
 

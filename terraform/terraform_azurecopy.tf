@@ -60,7 +60,7 @@ resource "azurerm_virtual_network" "main" {
 
 ## Create a simple subnet for VMs inside of the vNet ensuring the VNet is created first (depends_on)
 resource "azurerm_subnet" "internal" {
-  name                 = var.subnet
+  name                 = "mySubnet"
   resource_group_name  = azurerm_resource_group.test_RG.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefix       = "10.0.2.0/24"
