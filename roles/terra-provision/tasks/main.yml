@@ -1,26 +1,129 @@
 ---
 
-handlers:
-  - name: create terraform.tfvars
-    template:
-      src: terraform.tfvars.j2
-      dest: "{{ playbook_dir }}/terraform/terraform.tfvars"
+- name: Apt install packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - wget
+    - unzip
+
+- name: create terraform.tfvars
+  template:
+    src: terraform.tfvars.j2
+    dest: "{{ playbook_dir }}/terraform/terraform.tfvars"
+
+- name: terraform install
+  unarchive:
+    src: https://releases.hashicorp.com/terraform/0.9.1/terraform_0.9.1_linux_amd64.zip
+    dest: /usr/bin
+    remote_src: yes
+    
+    
+- name: init the terraform if .terraform is not there
+  shell: terraform init
+  args:
+    chdir: "{{ playbook_dir }}/terraform/"
+    creates: "{{ playbook_dir }}/terraform/.terraform/"
 
 
-task:
-  - name: Apt install packages
-    apt:
-      name: wget
-      state: latest
+- name: run the terraform script 
+  terraform:
+    project_path: "{{ playbook_dir }}/terraform/"
+    state: "{{ az_instance_state }}"
+    variables: 
+      subscription_id: "{{ subscription_id }}"
+      app_id: "{{ app_id }}"
+      password: "{{ password }}"
+      tenant: "{{ tenant }}"
+      location: "{{ location }}"
+      resource_group: "{{ resource_group }}"
+      network_security_group: "{{ network_security_group }}"
+      virtual_network: "{{ virtual_network }}"
+      VM_number: "{{ VM_number }}"
+  register: terra_result
 
-  - name: terraform install
-    unarchive:
-      src: https://releases.hashicorp.com/terraform/0.9.1/terraform_0.9.1_linux_amd64.zip
-      dest: /usr/bin
-      remote_src: yes
-      notify: create terraform.tfvars
+
+- name: show terra_result 
+  debug:
+    var: terra_result
+
+- name: set vm_ip and ssh private keys
+  set_fact:
+    vm_ips: "{{ terra_result.outputs.VMIps.value }}"
+    ssh_private_key: "{{ terra_result.outputs.SSH.value}}"
+  when: 
+    - terra_result is defined
 
 
-  
+- name: create the dynamic inventory
+  block: 
+    - name: remove old dynamic group vars file
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+          - ansible/group_vars/group_vars.yml
+    - name: create new group_vars file
+      file:
+        path: "{{ item }}"
+        state: touch
+      with_items:
+            - ansible/group_vars/group_vars.yml
+         
+    - name: remove old dynamic host file
+      file:
+        path: ansible/inventory/hosts
+        state: absent    
+    - name: create the inventory directory
+      file:
+        path: ansible/inventory/
+        state: directory
+    - name: create new dynamic host file
+      file:
+        path: ansible/inventory/hosts
+        state: touch
+    - name: add vars and retrieved IP to group variable file
+      blockinfile:
+        path: ansible/group_vars/group_vars.yml
+        marker: ""
+        block: |
+          ---
 
+          ansible_user: {{ remote_user[hypervisor] }}
+          become_user: {{ remote_user[hypervisor] }}
+          remote_user: {{ remote_user[hypervisor] }}
+          become: true
+
+          ...
+
+    - name: add retrieved IP to host file
+      blockinfile:
+        path: "ansible/inventory/hosts"
+        marker: ""
+        block: |
+          [master]
+          {{ vm_ips[0] }} 
+
+          [worker]
+          {{ vm_ips[1]  }}
+
+          [all:vars]
+          ansible_python_interpreter=/usr/bin/python3
+
+    - name: Add host
+      add_host:
+        hostname: "{{ vm_ips[0] }}"
+        groupname: master
+        remote_user: "{{ remote_user[hypervisor] }}"
+    - name: Add host
+      add_host:
+        hostname: "{{ vm_ips[1] }}"
+        groupname: worker
+        remote_user: "{{ remote_user[hypervisor] }}"
+  when: 
+    - terra_result.outputs.VMIps.value is defined
+
+- name: Collect facts again
+  setup:
 ...

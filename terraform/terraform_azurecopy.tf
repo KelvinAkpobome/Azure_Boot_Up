@@ -4,7 +4,25 @@ resource "azurerm_resource_group" "test_RG" {
   name     = var.resource_group
   location = var.location
 }
+## Create a simple vNet
+resource "azurerm_virtual_network" "main" {
+  name                = var.virtual_network
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.test_RG.location
+  resource_group_name = azurerm_resource_group.test_RG.name
+}
 
+## Create a simple subnet for VMs inside of the vNet ensuring the VNet is created first (depends_on)
+resource "azurerm_subnet" "internal" {
+  name                 = "mySubnet"
+  resource_group_name  = azurerm_resource_group.test_RG.name
+  virtual_network_name = azurerm_virtual_network.main.name
+  address_prefix       = "10.0.2.0/24"
+
+  depends_on = [
+    azurerm_virtual_network.main
+  ]
+}
 ## Create an availability set called test_AS which the VM will go into using the same location and resource
 ## group
 resource "azurerm_availability_set" "test_AS" {
@@ -12,6 +30,7 @@ resource "azurerm_availability_set" "test_AS" {
   location            = azurerm_resource_group.test_RG.location
   resource_group_name = azurerm_resource_group.test_RG.name
 }
+
 
 ## Create an Azure NSG from already existing nsg passed from tfvars to protect the infrastructure called my_nsg.
 resource "azurerm_network_security_group" "my_nsg" {
@@ -50,25 +69,8 @@ resource "azurerm_network_security_group" "my_nsg" {
 
 }
 
-## Create a simple vNet
-resource "azurerm_virtual_network" "main" {
-  name                = var.virtual_network
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.test_RG.location
-  resource_group_name = azurerm_resource_group.test_RG.name
-}
 
-## Create a simple subnet for VMs inside of the vNet ensuring the VNet is created first (depends_on)
-resource "azurerm_subnet" "internal" {
-  name                 = "mySubnet"
-  resource_group_name  = azurerm_resource_group.test_RG.name
-  virtual_network_name = azurerm_virtual_network.main.name
-  address_prefix       = "10.0.2.0/24"
 
-  depends_on = [
-    azurerm_virtual_network.main
-  ]
-}
 
 
 
