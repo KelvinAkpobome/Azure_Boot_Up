@@ -8,7 +8,7 @@ provider "azurerm" {
   tenant_id = "${var.tenant_id}"
 }
 
-variable "subscription_id {
+variable "subscription_id" {
     #description = "Subscription ID of Azure user" 
 }
 
