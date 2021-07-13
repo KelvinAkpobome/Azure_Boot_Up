@@ -26,6 +26,8 @@ variable "location" {
 }
 
 variable "network_security_group" {}
+
+variable "resource_group" {}
 variable "virtual_network" {}
 
 variable "VM_number" {}
