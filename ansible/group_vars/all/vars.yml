@@ -2,7 +2,7 @@
 
 az_instance_state: present 
 playbook_dir: ./ 
-location: "East US 2"
+location: "East US"
 network_security_group: "k8s-master-nsg" 
 virtual_network: "new_resource_vnet" 
 VM_number: 2
