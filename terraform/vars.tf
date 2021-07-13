@@ -9,27 +9,40 @@ provider "azurerm" {
 }
 
 variable "subscription_id" {
+    type = "string"
     #description = "Subscription ID of Azure user" 
 }
 
 variable "client_id" {
+    type = "string"
      #description = "App ID of Azure user"
 }
 variable "client_secret" {
+    type = "string"
     #description = "App password of Azure user"
 }
 variable "tenant_id" {
+    type = "string"
     #description = "Tenant ID of Azure user"
 }
 variable "location" {
+    type = "string"
     #description = "location of instance"
 }
 
-variable "network_security_group" {}
+variable "network_security_group" {
+    type = "string"
+}
 
-variable "resource_group" {}
-variable "virtual_network" {}
+variable "resource_group" {
+    type = "string"
+}
+variable "virtual_network" {
+    type = "string"
+}
 
-variable "VM_number" {}
+variable "VM_number" {
+    type = "string"
+}
 
 
