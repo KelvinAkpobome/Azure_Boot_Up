@@ -1,13 +1,10 @@
 ##getting the read-only resource from azure about the resource group
 
-data "azurerm_resource_group" "ARG" {
-  resource_group_name = var.resource_group
-}
 
 ## Create an Azure resource group using the value of resource_group and the location of the location variable
 ## defined in the terraform.tfvars file built by Ansible.
 resource "azurerm_resource_group" "test_RG" {
-  name     = data.azurerm_resource_group.ARG.name
+  name     = "new_resource"
   location = var.location
 }
 
