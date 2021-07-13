@@ -1,12 +1,23 @@
+##getting the read-only resource from azure about the resource group
+
+data "azurerm_resource_group" "ARG" {
+  resource_group_name = var.resource_group
+}
+
 ## Create an Azure resource group using the value of resource_group and the location of the location variable
 ## defined in the terraform.tfvars file built by Ansible.
 resource "azurerm_resource_group" "test_RG" {
-  name     = var.resource_group
+  name     = data.azurerm_resource_group.ARG.name
   location = var.location
+}
+
+data "azurerm_virtual_network" "AVN" {
+  name = var.virtual_network
+  resource_group_name = azurerm_resource_group.test_RG.name
 }
 ## Create a simple vNet
 resource "azurerm_virtual_network" "main" {
-  name                = var.virtual_network
+  name                = data.azurerm_resource_group.AVN.name
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.test_RG.location
   resource_group_name = azurerm_resource_group.test_RG.name
@@ -31,12 +42,16 @@ resource "azurerm_availability_set" "test_AS" {
   resource_group_name = azurerm_resource_group.test_RG.name
 }
 
+data "azurerm_network_security_group" "ANSG" {
+  name = var.network_security_group
+  resource_group_name = azurerm_resource_group.test_RG.name
+}
 
 ## Create an Azure NSG from already existing nsg passed from tfvars to protect the infrastructure called my_nsg.
 resource "azurerm_network_security_group" "my_nsg" {
-  name                = var.network_security_group
-  location            = azurerm_resource_group.monolithRG.location
-  resource_group_name = azurerm_resource_group.monolithRG.name
+  name                = data.azurerm_resource_group.ANSG.name
+  location            = azurerm_resource_group.test_RG.location
+  resource_group_name = azurerm_resource_group.test_RG.name
   
   ## Create a rule to allow k8s to connect to VM 
   security_rule {
@@ -136,7 +151,7 @@ resource "azurerm_linux_virtual_machine" "linuxVMs" {
 	resource_group_name   = azurerm_resource_group.test_RG.name
 	size                  = "Standard_DS1_v2"
   network_interface_ids = [azurerm_network_interface.main[count.index].id]
-	availability_set_id   = azurerm_availability_set.test_AS_linux.id
+	availability_set_id   = azurerm_availability_set.test_AS.id
 	computer_name  		    ="k8s-${count.index}"
   admin_username 		    = "azureuser"
 	disable_password_authentication = true
