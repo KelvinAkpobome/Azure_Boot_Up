@@ -175,7 +175,8 @@ resource "azurerm_linux_virtual_machine" "linuxVMs" {
 
 
 data "azurerm_public_ip" "vmIps"{
-  name = azurerm_public_ip.vmIps.name
+  count = var.VM_number
+  name = azurerm_public_ip.vmIps[count.index]
   resource_group_name = azurerm_resource_group.terraform-RG.name
   depends_on = [
   azurerm_public_ip.vmIps,
