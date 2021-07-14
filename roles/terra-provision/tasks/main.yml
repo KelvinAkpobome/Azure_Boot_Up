@@ -45,6 +45,11 @@
   when: 
     - terra_result is defined
 
+- name: Sleep for 320 seconds for dynamic IP and continue with play
+  wait_for:
+    timeout: 320
+  delegate_to: localhost
+
 
 - name: create the dynamic inventory
   block: 
