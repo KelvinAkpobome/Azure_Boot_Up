@@ -168,15 +168,23 @@ resource "azurerm_linux_virtual_machine" "linuxVMs" {
     }
 	
 	depends_on = [
-    azurerm_network_interface.main,
-    azurerm_public_ip.vmIps
+    azurerm_network_interface.main
   ]
 
 }
 
 
+data "azurerm_public_ip" "vmIps"{
+  name = azurerm_public_ip.vmIps.name
+  resource_group_name = azurerm_resource_group.terraform-RG.name
+  depends_on = [
+  azurerm_public_ip.vmIps,
+  azurerm_linux_virtual_machine.linuxVMs
+  ]
+}
+
 output "VMIps" {
-  value       = azurerm_public_ip.vmIps.*.ip_address
+  value       = data.azurerm_public_ip.vmIps.ip_address
 }
 
 
