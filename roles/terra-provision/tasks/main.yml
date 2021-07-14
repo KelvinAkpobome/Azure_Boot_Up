@@ -93,22 +93,22 @@
         marker: ""
         block: |
           [master]
-          {{ terra_result.outputs.VMIps[1] }} 
+          {{ vm_ips }} 
 
           [worker]
-          {{ terra_result.outputs.VMIps[2]  }}
+          {{ }}
 
           [all:vars]
           ansible_python_interpreter=/usr/bin/python3
 
     - name: Add host
       add_host:
-        hostname: "{{ terra_result.outputs.VMIps[1] }}"
+        hostname: "{{ }}"
         groupname: master
         remote_user: "{{ remote_user[hypervisor] }}"
     - name: Add host
       add_host:
-        hostname: "{{ terra_result.outputs.VMIps[2] }}"
+        hostname: "{{  }}"
         groupname: worker
         remote_user: "{{ remote_user[hypervisor] }}"
   when: 
