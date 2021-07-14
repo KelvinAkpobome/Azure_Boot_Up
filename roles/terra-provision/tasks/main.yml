@@ -93,22 +93,22 @@
         marker: ""
         block: |
           [master]
-          {{ vm_ips }} 
+          {{ vm_ips[1] }} 
 
           [worker]
-          {{ }}
+          {{vm_ips[2] }}
 
           [all:vars]
           ansible_python_interpreter=/usr/bin/python3
 
     - name: Add host
       add_host:
-        hostname: "{{ }}"
+        hostname: "{{ vm_ips[1] }}"
         groupname: master
         remote_user: "{{ remote_user[hypervisor] }}"
     - name: Add host
       add_host:
-        hostname: "{{  }}"
+        hostname: "{{ vm_ips[2] }}"
         groupname: worker
         remote_user: "{{ remote_user[hypervisor] }}"
   when: 
