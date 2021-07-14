@@ -185,7 +185,7 @@ data "azurerm_public_ip" "vmIps"{
 }
 
 output "VMIps" {
-  value       = data.azurerm_public_ip.vmIps.ip_address
+  value       = data.azurerm_public_ip.vmIps.*.ip_address
 }
 
 
