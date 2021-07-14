@@ -1,5 +1,3 @@
-## Ensures 2.0+ of the azurevm provider to get the azurerm_windows_virtual_machine resource and
-## the other resources and capabilities
 provider "azurerm" {
     features {}
     subscription_id = var.subscription_id
@@ -8,9 +6,6 @@ provider "azurerm" {
     tenant_id = var.tenant_id
 }
 
-##getting the read-only resource from azure about the resource group
-## Create an Azure resource group using the value of resource_group and the location of the location variable
-## defined in the terraform.tfvars file built by Ansible.
 resource "azurerm_resource_group" "terraform-RG" {
   name     = "terraform-resource"
   location = var.location

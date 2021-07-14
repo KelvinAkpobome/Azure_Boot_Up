@@ -2,7 +2,7 @@
 
 variable "subscription_id" {
     type = string
-    #description = "Subscription ID of Azure user" 
+    description = "Subscription ID of Azure user" 
 }
 
 variable "client_id" {

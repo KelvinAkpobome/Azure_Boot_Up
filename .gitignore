@@ -10,6 +10,7 @@ ansible/group_vars/all/vault.yml
 ansible/group_vars/dynamic_db.yml
 ansible/group_vars/dynamic_web.yml
 ansible/inventory/hosts
+playbook.retry
 
 ##############
 # terraform  #
