@@ -31,13 +31,6 @@
   terraform:
     project_path: "{{ playbook_dir }}/terraform/"
     state: "{{ az_instance_state }}"
-    variables: 
-      subscription_id: "{{ subscription_id }}"
-      app_id: "{{ app_id }}"
-      password: "{{ password }}"
-      tenant: "{{ tenant }}"
-      location: "{{ location }}"
-      VM_number: "{{ VM_number }}"
   register: terra_result
 
 
