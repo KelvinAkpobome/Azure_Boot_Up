@@ -37,7 +37,6 @@
       password: "{{ password }}"
       tenant: "{{ tenant }}"
       location: "{{ location }}"
-      resource_group: "{{ resource_group }}"
       network_security_group: "{{ network_security_group }}"
       virtual_network: "{{ virtual_network }}"
       VM_number: "{{ VM_number }}"
