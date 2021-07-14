@@ -1,18 +1,15 @@
 ##getting the read-only resource from azure about the resource group
 ## Create an Azure resource group using the value of resource_group and the location of the location variable
 ## defined in the terraform.tfvars file built by Ansible.
-resource "azurerm_resource_group" "test_RG" {
+resource "azurerm_resource_group" "terraform-RG" {
   name     = "new_resource"
   location = var.location
 }
 
-data "azurerm_virtual_network" "AVN" {
-  name = var.virtual_network
-  resource_group_name = azurerm_resource_group.test_RG.name
-}
+
 ## Create a simple vNet
 resource "azurerm_virtual_network" "main" {
-  name                = data.azurerm_resource_group.AVN.name
+  name                = "terraform-network"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.test_RG.location
   resource_group_name = azurerm_resource_group.test_RG.name
@@ -20,7 +17,7 @@ resource "azurerm_virtual_network" "main" {
 
 ## Create a simple subnet for VMs inside of the vNet ensuring the VNet is created first (depends_on)
 resource "azurerm_subnet" "internal" {
-  name                 = "mySubnet"
+  name                 = "terraform-Subnet"
   resource_group_name  = azurerm_resource_group.test_RG.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefix       = "10.0.2.0/24"
@@ -32,19 +29,16 @@ resource "azurerm_subnet" "internal" {
 ## Create an availability set called test_AS which the VM will go into using the same location and resource
 ## group
 resource "azurerm_availability_set" "test_AS" {
-  name                = "test_AS"
+  name                = "terraform-AS"
   location            = azurerm_resource_group.test_RG.location
   resource_group_name = azurerm_resource_group.test_RG.name
 }
 
-data "azurerm_network_security_group" "ANSG" {
-  name = var.network_security_group
-  resource_group_name = azurerm_resource_group.test_RG.name
-}
+
 
 ## Create an Azure NSG from already existing nsg passed from tfvars to protect the infrastructure called my_nsg.
 resource "azurerm_network_security_group" "my_nsg" {
-  name                = data.azurerm_resource_group.ANSG.name
+  name                = "terraform-nsg"
   location            = azurerm_resource_group.test_RG.location
   resource_group_name = azurerm_resource_group.test_RG.name
   
@@ -87,7 +81,7 @@ resource "azurerm_network_security_group" "my_nsg" {
 ## You'll need public IPs for each VM for Ansible to connect to and to deploy the web app to.
 resource "azurerm_public_ip" "vmIps" {
   count                   = var.VM_number
-  name                    = "publicVmIp-${count.index}"
+  name                    = "terraform-${count.index}"
   location                = azurerm_resource_group.test_RG.location
   resource_group_name     = azurerm_resource_group.test_RG.name
   allocation_method       = "Dynamic"
@@ -97,13 +91,13 @@ resource "azurerm_public_ip" "vmIps" {
 ## to refer to each VM which will be defined in an array
 resource "azurerm_network_interface" "main" {
   count               = var.VM_number
-  name                = "test_NIC-${count.index}"
+  name                = "terraform-NIC-${count.index}"
   location            = azurerm_resource_group.test_RG.location
   resource_group_name = azurerm_resource_group.test_RG.name
   
   ## Simple ip configuration for each vNic
   ip_configuration {
-    name                          = "ip_config"
+    name                          = "terraform-ip_config"
     subnet_id                     = azurerm_subnet.internal.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.vmIps[count.index].id
@@ -141,7 +135,7 @@ resource "tls_private_key" "k8sKey" {
 # Create the two Linux VMs associating the vNIcs created earlier associating it with its own AS
 resource "azurerm_linux_virtual_machine" "linuxVMs" {
 	count                 = var.VM_number
-	name                  = "k8sVM-${count.index}"
+	name                  = "terraform-${count.index}"
 	location              = var.location
 	resource_group_name   = azurerm_resource_group.test_RG.name
 	size                  = "Standard_DS1_v2"
