@@ -168,7 +168,8 @@ resource "azurerm_linux_virtual_machine" "linuxVMs" {
     }
 	
 	depends_on = [
-    azurerm_network_interface.main
+    azurerm_network_interface.main,
+    azurerm_public_ip.vmIps
   ]
 
 }
