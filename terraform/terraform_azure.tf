@@ -30,7 +30,7 @@ resource "azurerm_subnet" "internal" {
   name                 = "terraform-Subnet"
   resource_group_name  = azurerm_resource_group.terraform-RG.name
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefixes       = "10.0.2.0/24"
+  address_prefixes       = ["10.0.2.0/24"]
 
   depends_on = [
     azurerm_virtual_network.main
