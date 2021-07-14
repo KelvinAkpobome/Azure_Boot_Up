@@ -2,7 +2,7 @@
 ## Create an Azure resource group using the value of resource_group and the location of the location variable
 ## defined in the terraform.tfvars file built by Ansible.
 resource "azurerm_resource_group" "terraform-RG" {
-  name     = "new_resource"
+  name     = "terraform-resource"
   location = var.location
 }
 
@@ -11,14 +11,14 @@ resource "azurerm_resource_group" "terraform-RG" {
 resource "azurerm_virtual_network" "main" {
   name                = "terraform-network"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.test_RG.location
-  resource_group_name = azurerm_resource_group.test_RG.name
+  location            = azurerm_resource_group.terraform-RG.location
+  resource_group_name = azurerm_resource_group.terraform-RG.name
 }
 
 ## Create a simple subnet for VMs inside of the vNet ensuring the VNet is created first (depends_on)
 resource "azurerm_subnet" "internal" {
   name                 = "terraform-Subnet"
-  resource_group_name  = azurerm_resource_group.test_RG.name
+  resource_group_name  = azurerm_resource_group.terraform-RG.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefix       = "10.0.2.0/24"
 
@@ -30,8 +30,8 @@ resource "azurerm_subnet" "internal" {
 ## group
 resource "azurerm_availability_set" "test_AS" {
   name                = "terraform-AS"
-  location            = azurerm_resource_group.test_RG.location
-  resource_group_name = azurerm_resource_group.test_RG.name
+  location            = azurerm_resource_group.terraform-RG.location
+  resource_group_name = azurerm_resource_group.terraform-RG.name
 }
 
 
@@ -39,8 +39,8 @@ resource "azurerm_availability_set" "test_AS" {
 ## Create an Azure NSG from already existing nsg passed from tfvars to protect the infrastructure called my_nsg.
 resource "azurerm_network_security_group" "my_nsg" {
   name                = "terraform-nsg"
-  location            = azurerm_resource_group.test_RG.location
-  resource_group_name = azurerm_resource_group.test_RG.name
+  location            = azurerm_resource_group.terraform-RG.location
+  resource_group_name = azurerm_resource_group.terraform-RG.name
   
   ## Create a rule to allow k8s to connect to VM 
   security_rule {
@@ -82,8 +82,8 @@ resource "azurerm_network_security_group" "my_nsg" {
 resource "azurerm_public_ip" "vmIps" {
   count                   = var.VM_number
   name                    = "terraform-${count.index}"
-  location                = azurerm_resource_group.test_RG.location
-  resource_group_name     = azurerm_resource_group.test_RG.name
+  location                = azurerm_resource_group.terraform-RG.location
+  resource_group_name     = azurerm_resource_group.terraform-RG.name
   allocation_method       = "Dynamic"
 }
 
@@ -92,8 +92,8 @@ resource "azurerm_public_ip" "vmIps" {
 resource "azurerm_network_interface" "main" {
   count               = var.VM_number
   name                = "terraform-NIC-${count.index}"
-  location            = azurerm_resource_group.test_RG.location
-  resource_group_name = azurerm_resource_group.test_RG.name
+  location            = azurerm_resource_group.terraform-RG.location
+  resource_group_name = azurerm_resource_group.terraform-RG.name
   
   ## Simple ip configuration for each vNic
   ip_configuration {
@@ -137,7 +137,7 @@ resource "azurerm_linux_virtual_machine" "linuxVMs" {
 	count                 = var.VM_number
 	name                  = "terraform-${count.index}"
 	location              = var.location
-	resource_group_name   = azurerm_resource_group.test_RG.name
+	resource_group_name   = azurerm_resource_group.terraform-RG.name
 	size                  = "Standard_DS1_v2"
   network_interface_ids = [azurerm_network_interface.main[count.index].id]
 	availability_set_id   = azurerm_availability_set.test_AS.id
