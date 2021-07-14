@@ -11,6 +11,7 @@ provider "azurerm" {
 variable "subscription_id" {
     type = "string"
     #description = "Subscription ID of Azure user" 
+    default = 
 }
 
 variable "client_id" {
