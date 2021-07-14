@@ -1,6 +1,4 @@
 ##getting the read-only resource from azure about the resource group
-
-
 ## Create an Azure resource group using the value of resource_group and the location of the location variable
 ## defined in the terraform.tfvars file built by Ansible.
 resource "azurerm_resource_group" "test_RG" {
@@ -183,6 +181,6 @@ output "VMIps" {
 
 
 output "SSH" {
-  value       = tls_private_key.SSH.private_key_pem
+  value       = tls_private_key.k8sKey.private_key_pem
   sensitive = true
 }

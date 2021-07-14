@@ -1,10 +1,11 @@
 ## Ensures 2.0+ of the azurevm provider to get the azurerm_windows_virtual_machine resource and
 ## the other resources and capabilities
 provider "azurerm" {
-  subscription_id = "${ var.subscription_id}"
-  client_id = "${var.client_id}"
-  client_secret = "${var.client_secret}"
-  tenant_id = "${var.tenant_id}"
+    features {}
+    subscription_id = "${ var.subscription_id}"
+    client_id = "${var.client_id}"
+    client_secret = "${var.client_secret}"
+    tenant_id = "${var.tenant_id}"
 }
 
 variable "subscription_id" {
